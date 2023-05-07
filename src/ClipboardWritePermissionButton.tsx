@@ -25,7 +25,7 @@ export const ClipboardWritePermissionButton: FC = () => {
     );
     case 'prompt': return (
       <button key={key} className="btn btn-dark" type="button" disabled={!canRequest} onClick={handleClickRequestPermission}>
-        {canRequest ? 'Click to request write permission' : 'Write permission is not yet granted'}
+        {canRequest ? 'Click to request write permission' : 'Write permission not yet granted'}
       </button>
     );
     case 'denied': return (
