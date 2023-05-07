@@ -4,6 +4,8 @@ import { MaybePermissionStateAlert } from './MaybePermissionStateAlert';
 import { AlertDanger } from './AlertDanger';
 import { AlertInfo } from './AlertInfo';
 import { MaybeUnsupportedAlert } from './MaybeUnsupportedAlert';
+import { ClipboardReadPermissionButton } from './ClipboardReadPermissionButton';
+import { ClipboardWritePermissionButton } from './ClipboardWritePermissionButton';
 
 const MESSAGE_DELAY = 3_000;
 
@@ -84,6 +86,11 @@ const App: FC = () => {
       </div>
 
       {<MaybeUnsupportedAlert /> || <MaybePermissionStateAlert />}
+
+      <div className="my-3 d-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+        <ClipboardReadPermissionButton />
+        <ClipboardWritePermissionButton />
+      </div>
 
       {lastReadError && (
         <AlertDanger>
