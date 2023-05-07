@@ -9,7 +9,7 @@ export const MaybeUnsupportedAlert: FC = () => {
 
   return supported ? null : (
     <AlertDanger>
-      Your browser does not support the <a href="https://caniuse.com/?search=clipboard" target="_blank">clipboard API</a>.
+      Your browser does not support the <a className="alert-link" href="https://caniuse.com/mdn-api_clipboard_read" target="_blank">clipboard API</a>.
     </AlertDanger>
   );
 };
