@@ -87,7 +87,7 @@ const App: FC = () => {
 
       {<MaybeUnsupportedAlert /> || <MaybePermissionStateAlert />}
 
-      <div className="my-3 d-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+      <div className="my-3 d-grid gap-3" style={{ gridTemplateColumns: '1fr 1fr' }}>
         <ClipboardReadPermissionButton />
         <ClipboardWritePermissionButton />
       </div>
