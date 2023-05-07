@@ -6,4 +6,3 @@ export default defineConfig({
   base: '/clear-clipboard-formatting',
   plugins: [react()],
 });
-

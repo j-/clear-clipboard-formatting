@@ -3,6 +3,7 @@ import { Icons } from './Icons';
 import { MaybePermissionStateAlert } from './MaybePermissionStateAlert';
 import { AlertDanger } from './AlertDanger';
 import { AlertInfo } from './AlertInfo';
+import { MaybeUnsupportedAlert } from './MaybeUnsupportedAlert';
 
 const MESSAGE_DELAY = 3_000;
 
@@ -17,9 +18,11 @@ const App: FC = () => {
     setLastWriteError(null);
 
     let text: string;
+    let items: ClipboardItems;
 
     try {
       text = await navigator.clipboard.readText();
+      items = await navigator.clipboard.read();
     } catch (err) {
       setLastReadError(err as Error);
       return;
@@ -31,7 +34,15 @@ const App: FC = () => {
       setLastWriteError(err as Error);
     }
 
-    setMessage('Clipboard formatting was cleared.');
+    const allTypes = items.flatMap((item) => item.types).sort();
+    const otherTypes = allTypes.filter((type) => type !== 'text/plain');
+    const hasOthers = otherTypes.length > 0;
+
+    if (!hasOthers) {
+      setMessage('Clipboard formatting was already cleared.');
+    } else {
+      setMessage(`Clipboard formatting was cleared of these types: ${otherTypes.map((type) => JSON.stringify(type)).join(', ')}`);
+    }
   }, []);
 
   useEffect(() => {
@@ -66,7 +77,7 @@ const App: FC = () => {
         </button>
       </div>
 
-      <MaybePermissionStateAlert />
+      {<MaybeUnsupportedAlert /> || <MaybePermissionStateAlert />}
 
       {lastReadError && (
         <AlertDanger>
