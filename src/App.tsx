@@ -72,6 +72,10 @@ const App: FC = () => {
           }}
           type="button"
           onClick={handleClickGetAsPlainText}
+          disabled={
+            typeof navigator.clipboard.read !== 'function' ||
+            typeof navigator.clipboard.readText !== 'function'
+          }
         >
           Clear clipboard formatting
         </button>
