@@ -21,8 +21,10 @@ const App: FC = () => {
     let items: ClipboardItems;
 
     try {
-      text = await navigator.clipboard.readText();
-      items = await navigator.clipboard.read();
+      [text, items] = await Promise.all([
+        navigator.clipboard.readText(),
+        navigator.clipboard.read(),
+      ]);
     } catch (err) {
       setLastReadError(err as Error);
       return;
