@@ -13,7 +13,7 @@ const App: FC = () => {
   const [lastWriteError, setLastWriteError] = useState<Error | null>(null);
   const [message, setMessage] = useState<ReactNode | null>(null);
 
-  const handleClickGetAsPlainText = useCallback(async () => {
+  const clearClipboardFormatting = useCallback(async () => {
     setMessage(null);
     setLastReadError(null);
     setLastWriteError(null);
@@ -58,13 +58,23 @@ const App: FC = () => {
     };
   }, [message]);
 
+  useEffect(() => {
+    window.addEventListener('paste', clearClipboardFormatting);
+    return () => window.removeEventListener('paste', clearClipboardFormatting);
+  }, [clearClipboardFormatting]);
+
   return (
     <div className="App container my-5" style={{ maxWidth: '60ch' }}>
       <Icons />
 
       <h1 className="my-3">Clear clipboard formatting</h1>
 
-      <p>Click the button below to replace the contents of your clipboard with a plain text version. Will prevent formatting from being pasted into applications which support it.</p>
+      <p>
+        <strong>Paste into this window</strong> or <strong>click the button
+        below</strong> to replace the contents of your clipboard with a plain
+        text version. Will prevent formatting from being pasted into
+        applications which support it.
+      </p>
 
       <div className="d-flex justify-content-center">
         <button
@@ -74,7 +84,7 @@ const App: FC = () => {
             height: '10rem',
           }}
           type="button"
-          onClick={handleClickGetAsPlainText}
+          onClick={clearClipboardFormatting}
           disabled={
             typeof navigator.clipboard.read !== 'function' ||
             typeof navigator.clipboard.readText !== 'function'
