@@ -28,6 +28,7 @@ const App: FC = () => {
       ]);
     } catch (err) {
       setLastReadError(err as Error);
+      umami?.track('Read error', { message: (err as Error).message });
       return;
     }
 
@@ -35,6 +36,7 @@ const App: FC = () => {
       await navigator.clipboard.writeText(text);
     } catch (err) {
       setLastWriteError(err as Error);
+      umami?.track('Write error', { message: (err as Error).message });
     }
 
     const allTypes = items.flatMap((item) => item.types).sort();
@@ -46,7 +48,19 @@ const App: FC = () => {
     } else {
       setMessage(`Clipboard formatting was cleared of these types: ${otherTypes.map((type) => JSON.stringify(type)).join(', ')}`);
     }
+
+    umami?.track('Clear formatting success', { types: otherTypes });
   }, []);
+
+  const handleClickButton = useCallback(() => {
+    umami?.track('Click button');
+    clearClipboardFormatting();
+  }, [clearClipboardFormatting]);
+
+  const handlePasteWindow = useCallback(() => {
+    umami?.track('Paste window');
+    clearClipboardFormatting();
+  }, [clearClipboardFormatting]);
 
   useEffect(() => {
     const clock = setTimeout(() => {
@@ -59,9 +73,9 @@ const App: FC = () => {
   }, [message]);
 
   useEffect(() => {
-    window.addEventListener('paste', clearClipboardFormatting);
-    return () => window.removeEventListener('paste', clearClipboardFormatting);
-  }, [clearClipboardFormatting]);
+    window.addEventListener('paste', handlePasteWindow);
+    return () => window.removeEventListener('paste', handlePasteWindow);
+  }, [handlePasteWindow]);
 
   return (
     <div className="App container my-5" style={{ maxWidth: '60ch' }}>
@@ -84,7 +98,7 @@ const App: FC = () => {
             height: '10rem',
           }}
           type="button"
-          onClick={clearClipboardFormatting}
+          onClick={handleClickButton}
           disabled={
             typeof navigator.clipboard.read !== 'function' ||
             typeof navigator.clipboard.readText !== 'function'
