@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { usePermissionStatus } from './use-permission-status';
+import { type AnyPermissionDescriptor } from './types';
 
-export const usePermissionState = (permissionName: string): PermissionState | null => {
-  const status: PermissionStatus | null = usePermissionStatus(permissionName);
+export const usePermissionState = (permissionDesc: AnyPermissionDescriptor): PermissionState | null => {
+  const status: PermissionStatus | null = usePermissionStatus(permissionDesc);
   const [state, setState] = useState<PermissionState | null>(null);
 
   const handleChangeState = useCallback(() => {

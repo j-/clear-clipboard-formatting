@@ -1,12 +1,17 @@
 import { useEffect, useState } from 'react';
+import usePrevious from 'react-use-previous';
+import { shallowEqualObjects } from 'shallow-equal';
+import { AnyPermissionDescriptor } from './types';
 
-export const usePermissionStatus = (permissionName: string): PermissionStatus | null => {
+export const usePermissionStatus = (permissionDesc: AnyPermissionDescriptor): PermissionStatus | null => {
   const [status, setStatus] = useState<PermissionStatus | null>(null);
+  const previousPermissionDesc = usePrevious(permissionDesc);
 
   useEffect(() => {
     if (
       !navigator.permissions ||
-      typeof navigator.permissions.query !== 'function'
+      typeof navigator.permissions.query !== 'function' ||
+      shallowEqualObjects(permissionDesc, previousPermissionDesc)
     ) {
       return;
     }
@@ -14,7 +19,7 @@ export const usePermissionStatus = (permissionName: string): PermissionStatus | 
     let effectMounted = true;
 
     navigator.permissions
-      .query({ name: permissionName as PermissionName })
+      .query(permissionDesc as PermissionDescriptor)
       .then((status) => {
         if (effectMounted) {
           setStatus(status);
@@ -27,7 +32,7 @@ export const usePermissionStatus = (permissionName: string): PermissionStatus | 
     return () => {
       effectMounted = false;
     };
-  }, [permissionName]);
+  }, [permissionDesc, previousPermissionDesc]);
 
   return status;
 };
