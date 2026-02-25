@@ -1,9 +1,8 @@
-import { FC, HTMLAttributes } from 'react';
-import { InfoFill } from './Icons';
+import Alert, { AlertProps } from '@mui/material/Alert';
+import { FC } from 'react';
 
-export const AlertInfo: FC<HTMLAttributes<HTMLDivElement>> = ({ children, ...props }) => (
-  <div className="alert alert-info d-flex align-items-center" {...props}>
-    <InfoFill className="bi flex-shrink-0 me-2" aria-label="Info:" />
-    <div>{children}</div>
-  </div>
+export const AlertInfo: FC<AlertProps> = ({ children, ...props }) => (
+  <Alert severity="info" sx={{ mt: 2 }} {...props}>
+    {children}
+  </Alert>
 );

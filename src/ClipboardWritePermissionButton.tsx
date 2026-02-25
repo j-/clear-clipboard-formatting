@@ -1,4 +1,5 @@
-import { FC, useCallback, useId } from 'react';
+import { FC, useCallback } from 'react';
+import Button from '@mui/material/Button';
 import { useClipboardWritePermissionState } from './use-clipboard-write-permission-state';
 
 declare global {
@@ -8,8 +9,6 @@ declare global {
 }
 
 export const ClipboardWritePermissionButton: FC = () => {
-  const id = useId();
-  const key = `ClipboardWritePermissionButton-${id}`;
   const state: PermissionState | null = useClipboardWritePermissionState();
   const canRequest = typeof navigator.permissions.request == 'function';
 
@@ -19,24 +18,24 @@ export const ClipboardWritePermissionButton: FC = () => {
 
   switch (state) {
     case 'granted': return (
-      <button key={key} className="btn btn-light" type="button" disabled>
+      <Button variant="outlined" color="success" type="button" disabled>
         Write permission granted
-      </button>
+      </Button>
     );
     case 'prompt': return (
-      <button key={key} className="btn btn-dark" type="button" disabled={!canRequest} onClick={handleClickRequestPermission}>
+      <Button variant="contained" color="primary" type="button" disabled={!canRequest} onClick={handleClickRequestPermission}>
         {canRequest ? 'Click to request write permission' : 'Write permission not yet granted'}
-      </button>
+      </Button>
     );
     case 'denied': return (
-      <button key={key} className="btn btn-danger" type="button" disabled>
+      <Button variant="contained" color="error" type="button" disabled>
         Write permission denied
-      </button>
+      </Button>
     );
     default: return (
-      <button key={key} className="btn btn-dark" type="button" disabled={!canRequest} onClick={handleClickRequestPermission}>
+      <Button variant="contained" color="primary" type="button" disabled={!canRequest} onClick={handleClickRequestPermission}>
         {canRequest ? 'Click to request write permission' : 'Write permission state cannot be determined'}
-      </button>
+      </Button>
     );
   }
 };

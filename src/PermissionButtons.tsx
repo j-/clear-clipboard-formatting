@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import Box from '@mui/material/Box';
 import { ClipboardReadPermissionButton } from './ClipboardReadPermissionButton';
 import { ClipboardWritePermissionButton } from './ClipboardWritePermissionButton';
 import { useClipboardReadPermissionState } from './use-clipboard-read-permission-state';
@@ -13,9 +14,9 @@ export const PermissionButtons: FC = () => {
   }
 
   return (
-    <div className="my-3 d-grid gap-3" style={{ gridTemplateColumns: '1fr 1fr' }}>
+    <Box sx={{ my: 3, display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' } }}>
       <ClipboardReadPermissionButton />
       <ClipboardWritePermissionButton />
-    </div>
+    </Box>
   );
 };

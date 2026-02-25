@@ -1,9 +1,8 @@
-import { FC, HTMLAttributes } from 'react';
-import { ExclamationTriangleFill } from './Icons';
+import Alert, { AlertProps } from '@mui/material/Alert';
+import { FC } from 'react';
 
-export const AlertDanger: FC<HTMLAttributes<HTMLDivElement>> = ({ children, ...props }) => (
-  <div className="alert alert-danger d-flex align-items-center" {...props}>
-    <ExclamationTriangleFill className="bi flex-shrink-0 me-2" aria-label="Danger:" />
-    <div>{children}</div>
-  </div>
+export const AlertDanger: FC<AlertProps> = ({ children, ...props }) => (
+  <Alert severity="error" sx={{ mt: 2 }} {...props}>
+    {children}
+  </Alert>
 );

@@ -1,5 +1,8 @@
 import { FC, ReactNode, useCallback, useEffect, useState } from 'react';
-import { Icons } from './Icons';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
 import { MaybePermissionStateAlert } from './MaybePermissionStateAlert';
 import { AlertDanger } from './AlertDanger';
 import { AlertInfo } from './AlertInfo';
@@ -81,24 +84,24 @@ const App: FC = () => {
   }, [handlePasteWindow]);
 
   return (
-    <div className="App container my-5" style={{ maxWidth: '60ch' }}>
-      <Icons />
+    <Container maxWidth="sm" sx={{ my: 5 }}>
+      <Typography component="h1" variant="h4" sx={{ my: 3 }}>
+        Clear clipboard formatting
+      </Typography>
 
-      <h1 className="my-3">Clear clipboard formatting</h1>
+      <Typography component="p">
+        <strong>Paste into this window</strong> or <strong>click the button below</strong> to replace the contents of your clipboard with a plain text version. Will prevent formatting from being pasted into applications which support it.
+      </Typography>
 
-      <p>
-        <strong>Paste into this window</strong> or <strong>click the button
-        below</strong> to replace the contents of your clipboard with a plain
-        text version. Will prevent formatting from being pasted into
-        applications which support it.
-      </p>
-
-      <div className="d-flex justify-content-center">
-        <button
-          className="btn btn-dark btn-lg my-5"
-          style={{
+      <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
+        <Button
+          variant="contained"
+          size="large"
+          sx={{
             width: '20rem',
             height: '10rem',
+            fontSize: '1.25rem',
+            borderRadius: 4,
           }}
           type="button"
           onClick={handleClickButton}
@@ -108,8 +111,8 @@ const App: FC = () => {
           }
         >
           Clear clipboard formatting
-        </button>
-      </div>
+        </Button>
+      </Box>
 
       <PermissionButtons />
 
@@ -132,7 +135,7 @@ const App: FC = () => {
           {message}
         </AlertInfo>
       )}
-    </div>
+    </Container>
   );
 };
 

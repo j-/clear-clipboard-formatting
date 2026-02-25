@@ -1,4 +1,5 @@
-import { FC, useCallback, useId } from 'react';
+import { FC, useCallback } from 'react';
+import Button from '@mui/material/Button';
 import { useClipboardReadPermissionState } from './use-clipboard-read-permission-state';
 
 declare global {
@@ -8,8 +9,6 @@ declare global {
 }
 
 export const ClipboardReadPermissionButton: FC = () => {
-  const id = useId();
-  const key = `ClipboardReadPermissionButton-${id}`;
   const state: PermissionState | null = useClipboardReadPermissionState();
   const canRequest = typeof navigator.permissions.request == 'function';
 
@@ -19,24 +18,24 @@ export const ClipboardReadPermissionButton: FC = () => {
 
   switch (state) {
     case 'granted': return (
-      <button key={key} className="btn btn-light" type="button" disabled>
+      <Button variant="outlined" color="success" type="button" disabled>
         Read permission granted
-      </button>
+      </Button>
     );
     case 'prompt': return (
-      <button key={key} className="btn btn-dark" type="button" disabled={!canRequest} onClick={handleClickRequestPermission}>
+      <Button variant="contained" color="primary" type="button" disabled={!canRequest} onClick={handleClickRequestPermission}>
         {canRequest ? 'Click to request read permission' : 'Read permission not yet granted'}
-      </button>
+      </Button>
     );
     case 'denied': return (
-      <button key={key} className="btn btn-danger" type="button" disabled>
+      <Button variant="contained" color="error" type="button" disabled>
         Read permission denied
-      </button>
+      </Button>
     );
     default: return (
-      <button key={key} className="btn btn-dark" type="button" disabled={!canRequest} onClick={handleClickRequestPermission}>
+      <Button variant="contained" color="primary" type="button" disabled={!canRequest} onClick={handleClickRequestPermission}>
         {canRequest ? 'Click to request read permission' : 'Read permission state cannot be determined'}
-      </button>
+      </Button>
     );
   }
 };
