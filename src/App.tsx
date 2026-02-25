@@ -62,6 +62,9 @@ const App: FC = () => {
     clearClipboardFormatting();
   }, [clearClipboardFormatting]);
 
+  const maybeUnsupportedAlert = <MaybeUnsupportedAlert />;
+  const maybePermissionStateAlert = <MaybePermissionStateAlert />;
+
   useEffect(() => {
     const clock = setTimeout(() => {
       setMessage(null);
@@ -110,7 +113,7 @@ const App: FC = () => {
 
       <PermissionButtons />
 
-      {<MaybeUnsupportedAlert /> || <MaybePermissionStateAlert />}
+      {maybeUnsupportedAlert || maybePermissionStateAlert}
 
       {lastReadError && (
         <AlertDanger>
