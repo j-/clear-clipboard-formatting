@@ -1,7 +1,9 @@
 import { FC, ReactNode, useCallback, useEffect, useState } from 'react';
-import Box from '@mui/material/Box';
+import AlertTitle from '@mui/material/AlertTitle';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
+import Stack from '@mui/material/Stack';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { MaybePermissionStateAlert } from './MaybePermissionStateAlert';
 import { AlertDanger } from './AlertDanger';
@@ -9,7 +11,7 @@ import { AlertInfo } from './AlertInfo';
 import { MaybeUnsupportedAlert } from './MaybeUnsupportedAlert';
 import { PermissionButtons } from './PermissionButtons';
 
-const MESSAGE_DELAY = 3_000;
+const MESSAGE_DELAY = 5_000;
 
 const App: FC = () => {
   const [lastReadError, setLastReadError] = useState<Error | null>(null);
@@ -47,7 +49,7 @@ const App: FC = () => {
     const hasOthers = otherTypes.length > 0;
 
     if (!hasOthers) {
-      setMessage('Clipboard formatting was already cleared.');
+      setMessage('Clipboard formatting was cleared.');
     } else {
       setMessage(`Clipboard formatting was cleared of these types: ${otherTypes.map((type) => JSON.stringify(type)).join(', ')}`);
     }
@@ -55,7 +57,7 @@ const App: FC = () => {
     umami?.track('Clear formatting success', { types: otherTypes });
   }, []);
 
-  const handleClickButton = useCallback(() => {
+  const handleClickClearFormattingButton = useCallback(() => {
     umami?.track('Click button');
     clearClipboardFormatting();
   }, [clearClipboardFormatting]);
@@ -65,8 +67,40 @@ const App: FC = () => {
     clearClipboardFormatting();
   }, [clearClipboardFormatting]);
 
-  const maybeUnsupportedAlert = <MaybeUnsupportedAlert />;
-  const maybePermissionStateAlert = <MaybePermissionStateAlert />;
+  const clearClipboard = useCallback(async () => {
+    let items: ClipboardItems = [];
+
+    try {
+      const permission = await navigator.permissions.query({
+        name: 'clipboard-read' as PermissionName,
+      });
+      if (permission.state === 'granted') {
+        items = await navigator.clipboard.read();
+      }
+    } catch (err) {
+      umami?.track('Read error', { message: (err as Error).message });
+    }
+
+    try {
+      await navigator.clipboard.writeText('');
+    } catch (err) {
+      setLastWriteError(err as Error);
+      umami?.track('Write error', { message: (err as Error).message });
+    }
+
+    const allTypes = items.flatMap((item) => item.types).sort();
+
+    if (allTypes.length === 0) {
+      setMessage('Clipboard was cleared.');
+    } else {
+      setMessage(`Clipboard was cleared of these types: ${allTypes.map((type) => JSON.stringify(type)).join(', ')}`);
+    }
+  }, []);
+
+  const handleClickClearClipboardButton = useCallback(() => {
+    umami?.track('Click clear clipboard button');
+    clearClipboard();
+  }, [clearClipboard]);
 
   useEffect(() => {
     const clock = setTimeout(() => {
@@ -93,40 +127,82 @@ const App: FC = () => {
         <strong>Paste into this window</strong> or <strong>click the button below</strong> to replace the contents of your clipboard with a plain text version. Will prevent formatting from being pasted into applications which support it.
       </Typography>
 
-      <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
-        <Button
-          variant="contained"
-          size="large"
+      <Stack
+        gap={2}
+        mx="auto"
+        my={5}
+        sx={{
+          width: '20rem',
+        }}
+      >
+        <Tooltip
+          title="Remove formating from text in clipboard"
+          followCursor
+          placement="top"
           sx={{
-            width: '20rem',
-            height: '10rem',
-            fontSize: '1.25rem',
-            borderRadius: 4,
+            pointerEvents: 'none',
           }}
-          type="button"
-          onClick={handleClickButton}
-          disabled={
-            typeof navigator.clipboard.read !== 'function' ||
-            typeof navigator.clipboard.readText !== 'function'
-          }
         >
-          Clear clipboard formatting
-        </Button>
-      </Box>
+          <Button
+            variant="contained"
+            size="large"
+            sx={{
+              height: '10rem',
+              fontSize: '1.25rem',
+              borderRadius: 4,
+            }}
+            type="button"
+            onClick={handleClickClearFormattingButton}
+            disabled={
+              typeof navigator.clipboard.read !== 'function' ||
+              typeof navigator.clipboard.readText !== 'function'
+            }
+          >
+            Clear clipboard formatting
+          </Button>
+        </Tooltip>
+
+        <Tooltip
+          title="Empty clipboard of text and images"
+          followCursor
+          sx={{
+            pointerEvents: 'none',
+          }}
+        >
+          <Button
+            variant="contained"
+            size="medium"
+            sx={{
+              borderRadius: 3,
+              filter: 'invert(1)',
+            }}
+            type="button"
+            onClick={handleClickClearClipboardButton}
+            disabled={
+              typeof navigator.clipboard.writeText !== 'function'
+            }
+          >
+            Clear all
+          </Button>
+        </Tooltip>
+      </Stack>
 
       <PermissionButtons />
 
-      {maybeUnsupportedAlert || maybePermissionStateAlert}
+      <MaybeUnsupportedAlert />
+      <MaybePermissionStateAlert />
 
       {lastReadError && (
         <AlertDanger>
-          <strong>There was an error reading from the clipboard:</strong>{' '}{lastReadError.message}
+          <AlertTitle>There was an error reading from the clipboard</AlertTitle>
+          {lastReadError.message}
         </AlertDanger>
       )}
 
       {lastWriteError && (
         <AlertDanger>
-          <strong>There was an error reading writing to the clipboard:</strong>{' '}{lastWriteError.message}
+          <AlertTitle>There was an error reading writing to the clipboard</AlertTitle>
+          {lastWriteError.message}
         </AlertDanger>
       )}
 
